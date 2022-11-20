@@ -18,3 +18,5 @@ artifacts
 .vscode
 .idea
 .DS_Store
+
+cubox-cli

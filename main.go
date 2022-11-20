@@ -17,7 +17,7 @@ func run() int {
 	if _, err := parser.AddCommand("new", "Create a new memo", "", &NewCommand{}); err != nil {
 		log.Fatal(err)
 	}
-	if _, err := parser.AddCommand("version", "Show version", "", &VersionCommand{}); err != nil {
+	if _, err := parser.AddCommand("version", "Print version", "", &VersionCommand{}); err != nil {
 		log.Fatal(err)
 	}
 

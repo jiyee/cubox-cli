@@ -1,4 +1,4 @@
-module github.com/geekdada/flomo-cli
+module github.com/jiyee/cubox-cli
 
 go 1.15
 

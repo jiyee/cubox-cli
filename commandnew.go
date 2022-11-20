@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/geekdada/flomo-cli/client"
+	"github.com/jiyee/cubox-cli/client"
 	"github.com/pkg/errors"
 	"io"
 	"log"
@@ -12,15 +12,15 @@ import (
 )
 
 type NewCommand struct {
-	Verbose bool `short:"V" long:"verbose" description:"Show verbose debug information"`
+	Verbose bool `short:"V" long:"verbose" description:"show verbose debug information"`
 
-	Api string `long:"api" description:"flomo API address" env:"FLOMO_API"`
+	API string `long:"api" description:"cubox custom API" env:"CUBOX_API"`
 
-	Tag string `short:"t" long:"tag" description:"Additional tag"`
+	Tags []string `short:"t" long:"tag" description:"additional tags"`
 }
 
 func (x *NewCommand) Usage() string {
-	return "[new command options] <memo content>"
+	return "[new command options] <the content of memo>"
 }
 
 func (x *NewCommand) Execute(args []string) error {
@@ -41,13 +41,14 @@ func (x *NewCommand) Run(args []string) (int, error) {
 	}
 
 	if content == "" {
-		return 1, errors.New("you must specify the content of the memo")
+		return 1, errors.New("must specify the content of memo")
 	}
 
 	memo := client.Memo{
+		Type:    "memo",
 		Content: content,
-		Tag:     x.Tag,
-		Api:     x.Api,
+		Tags:    x.Tags,
+		API:     x.API,
 	}
 
 	responseMessage, err := memo.Submit(x.Verbose)
@@ -62,8 +63,8 @@ func (x *NewCommand) Run(args []string) (int, error) {
 }
 
 func isInputFromPipe() bool {
-    fileInfo, _ := os.Stdin.Stat()
-    return fileInfo.Mode() & os.ModeCharDevice == 0
+	fileInfo, _ := os.Stdin.Stat()
+	return fileInfo.Mode()&os.ModeCharDevice == 0
 }
 
 func getStdinContent(r io.Reader) string {

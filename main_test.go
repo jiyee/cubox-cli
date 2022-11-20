@@ -16,44 +16,44 @@ import (
 
 var update = flag.Bool("update", false, "update test files with results")
 
-func TestCLI_New(t *testing.T) {
+func TestCLI_NewMemo(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		requestBody, _ := ioutil.ReadAll(req.Body)
-		assert.Equal(t, `{"content":"测试内容"}`, string(requestBody[:]))
-		rw.Write([]byte(`{"code":0,"message":"记录成功"}`))
+		assert.Equal(t, `{"type":"memo","content":"Test"}`, string(requestBody[:]))
+		rw.Write([]byte(`{"code":200,"message":""}`))
 	}))
 
 	defer server.Close()
 
-	if err := exec.Command("go", "run", ".", "new", "--api", server.URL, "测试内容").Run(); err != nil {
+	if err := exec.Command("go", "run", ".", "new", "--api", server.URL, "Test").Run(); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func TestCLI_New_WithTag(t *testing.T) {
+func TestCLI_NewMemo_WithTags(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		requestBody, _ := ioutil.ReadAll(req.Body)
-		assert.Equal(t, `{"content":"测试内容\n\n#test"}`, string(requestBody[:]))
-		rw.Write([]byte(`{"code":0,"message":"记录成功"}`))
+		assert.Equal(t, `{"type":"memo","content":"Test\n\n#test"}`, string(requestBody[:]))
+		rw.Write([]byte(`{"code":200,"message":""}`))
 	}))
 
 	defer server.Close()
 
-	if err := exec.Command("go", "run", ".", "new", "--api", server.URL, "--tag", "test", "测试内容").Run(); err != nil {
+	if err := exec.Command("go", "run", ".", "new", "--api", server.URL, "--tags", "test", "Test").Run(); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func TestCLI_New_Pipe(t *testing.T) {
+func TestCLI_NewMemo_Pipe(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		requestBody, _ := ioutil.ReadAll(req.Body)
-		assert.Equal(t, `{"content":"测试内容"}`, string(requestBody[:]))
-		rw.Write([]byte(`{"code":0,"message":"记录成功"}`))
+		assert.Equal(t, `{"type":"memo","content":"Test"}`, string(requestBody[:]))
+		rw.Write([]byte(`{"code":200,"message":""}`))
 	}))
 
 	defer server.Close()
 
-	command1 := exec.Command("echo", "测试内容")
+	command1 := exec.Command("echo", "Test")
 	command2 := exec.Command("go", "run", ".", "new", "--api", server.URL)
 
 	r, w := io.Pipe()

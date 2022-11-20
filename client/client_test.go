@@ -1,7 +1,7 @@
 package client_test
 
 import (
-	"github.com/geekdada/flomo-cli/client"
+	"github.com/jiyee/cubox-cli/client"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
@@ -13,48 +13,51 @@ import (
 func TestMemo_Submit_Success(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		requestBody, _ := ioutil.ReadAll(req.Body)
-		assert.Equal(t, `{"content":"Test"}`, string(requestBody[:]))
-		rw.Write([]byte(`{"code":0,"message":"记录成功"}`))
+		assert.Equal(t, `{"type":"memo","content":"Test","tags":null}`, string(requestBody[:]))
+		rw.Write([]byte(`{"code":200,"message":""}`))
 	}))
 
 	defer server.Close()
 
 	memo := client.Memo{
+		Type:    "memo",
 		Content: "Test",
-		Api:     server.URL,
+		API:     server.URL,
 	}
 
 	message, err := memo.Submit(false)
 
-	assert.Equal(t, "记录成功", *message)
+	assert.Equal(t, "", *message)
 	assert.Nil(t, err)
 }
 
-func TestMemo_Submit_WithTag(t *testing.T) {
+func TestMemo_Submit_WithTags(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		requestBody, _ := ioutil.ReadAll(req.Body)
-		assert.Equal(t, `{"content":"Test\n\n#TestTag"}`, string(requestBody[:]))
-		rw.Write([]byte(`{"code":0,"message":"记录成功"}`))
+		assert.Equal(t, `{"type":"memo","content":"Test","tags":["test"]}`, string(requestBody[:]))
+		rw.Write([]byte(`{"code":200,"message":""}`))
 	}))
 
 	defer server.Close()
 
 	memo := client.Memo{
+		Type:    "memo",
 		Content: "Test",
-		Tag:     "TestTag",
-		Api:     server.URL,
+		Tags:    []string{"test"},
+		API:     server.URL,
 	}
 
 	message, err := memo.Submit(false)
 
-	assert.Equal(t, "记录成功", *message)
+	assert.Equal(t, "", *message)
 	assert.Nil(t, err)
 }
 
 func TestMemo_Submit_LackOfArgs(t *testing.T) {
 	func() {
 		memo := client.Memo{
-			Api:     "",
+			Type:    "memo",
+			API:     "",
 			Content: "Test",
 		}
 
@@ -65,7 +68,8 @@ func TestMemo_Submit_LackOfArgs(t *testing.T) {
 
 	func() {
 		memo := client.Memo{
-			Api:     "Test",
+			Type:    "memo",
+			API:     "Test",
 			Content: "",
 		}
 
@@ -77,7 +81,8 @@ func TestMemo_Submit_LackOfArgs(t *testing.T) {
 
 func TestMemo_Submit_BadServer(t *testing.T) {
 	memo := client.Memo{
-		Api:     "http://server_not_exist",
+		Type:    "memo",
+		API:     "http://server_not_exist",
 		Content: "Test",
 	}
 
@@ -94,8 +99,9 @@ func TestMemo_Submit_BadResponse(t *testing.T) {
 	defer server.Close()
 
 	memo := client.Memo{
+		Type:    "memo",
 		Content: "Test",
-		Api:     server.URL,
+		API:     server.URL,
 	}
 
 	_, err := memo.Submit(false)
@@ -112,13 +118,14 @@ func TestMemo_Submit_500(t *testing.T) {
 	defer server.Close()
 
 	memo := client.Memo{
+		Type:    "memo",
 		Content: "Test",
-		Api:     server.URL,
+		API:     server.URL,
 	}
 
 	_, err := memo.Submit(false)
 
-	assert.Equal(t, "status 500: err response error", err.Error())
+	assert.Equal(t, "status: 500: err: response error", err.Error())
 }
 
 func TestMemo_Submit_400(t *testing.T) {
@@ -130,11 +137,12 @@ func TestMemo_Submit_400(t *testing.T) {
 	defer server.Close()
 
 	memo := client.Memo{
+		Type:    "memo",
 		Content: "Test",
-		Api:     server.URL,
+		API:     server.URL,
 	}
 
 	_, err := memo.Submit(false)
 
-	assert.Equal(t, "status 400: err request is not valid", err.Error())
+	assert.Equal(t, "status: 400: err: request is not valid", err.Error())
 }

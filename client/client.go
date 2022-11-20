@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gojektech/heimdall/v6/httpclient"
 	"github.com/pkg/errors"
 	"io/ioutil"
@@ -13,30 +12,34 @@ import (
 )
 
 type Memo struct {
-	Content string
-	Tag     string
-	Api     string
+	Type        string
+	Content     string
+	Title       string
+	Description string
+	Tags        []string
+	Folder      string
+	API         string
 }
 
 type Payload struct {
-	Content string `json:"content"`
+	Type    string   `json:"type"`
+	Content string   `json:"content"`
+	Tags    []string `json:"tags"`
 }
 
 func (m *Memo) Submit(verbose bool) (*string, error) {
 	content := strings.TrimSpace(m.Content)
 
-	if m.Api == "" || content == "" {
+	if m.API == "" || content == "" {
 		return nil, errors.New("lack of necessary arguments")
-	}
-
-	if m.Tag != "" {
-		content += fmt.Sprintf("\n\n#%s", m.Tag)
 	}
 
 	timeout := 3000 * time.Millisecond
 	client := httpclient.NewClient(httpclient.WithHTTPTimeout(timeout))
 	payloadJSON, _ := json.Marshal(Payload{
+		m.Type,
 		content,
+		m.Tags,
 	})
 	body := ioutil.NopCloser(strings.NewReader(string(payloadJSON)))
 	headers := http.Header{}
@@ -47,7 +50,7 @@ func (m *Memo) Submit(verbose bool) (*string, error) {
 		log.Printf("Payload JSON: %s", payloadJSON)
 	}
 
-	response, err := client.Post(m.Api, body, headers)
+	response, err := client.Post(m.API, body, headers)
 
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to make a request to server")

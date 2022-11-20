@@ -1,5 +1,5 @@
-PKG=github.com/geekdada/flomo-cli
-NAME=flomo-cli
+PKG=github.com/jiyee/cubox-cli
+NAME=cubox-cli
 BINDIR=artifacts
 VERSION=$(shell git describe --tags || echo "unknown")
 GOBUILD=CGO_ENABLED=0 go build -trimpath -ldflags '-X "main.version=$(VERSION)" \

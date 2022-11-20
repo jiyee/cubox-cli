@@ -18,15 +18,15 @@ func TestNewCommand_Usage(t *testing.T) {
 func TestNewCommand_Run(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		requestBody, _ := ioutil.ReadAll(req.Body)
-		assert.Equal(t, `{"content":"测试内容"}`, string(requestBody[:]))
-		rw.Write([]byte(`{"code":0,"message":"记录成功"}`))
+		assert.Equal(t, `{"type":"memo","content":"Test"}`, string(requestBody[:]))
+		rw.Write([]byte(`{"code":200,"message":""}`))
 	}))
 
 	newCommand := NewCommand{
-		Api: server.URL,
+		API: server.URL,
 	}
 
-	if _, err := newCommand.Run([]string{"测试内容"}); err != nil {
+	if _, err := newCommand.Run([]string{"Test"}); err != nil {
 		log.Fatal(err)
 	}
 }

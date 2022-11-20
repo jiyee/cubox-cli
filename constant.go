@@ -1,5 +1,5 @@
 package main
 
 var (
-	version = "unknown"
+	version = "1.0.0"
 )
