@@ -14,7 +14,10 @@ func run() int {
 	var options struct{}
 	var parser = flags.NewParser(&options, flags.Default)
 
-	if _, err := parser.AddCommand("new", "Create a new memo", "", &NewCommand{}); err != nil {
+	if _, err := parser.AddCommand("memo", "Create a new memo", "", &MemoCommand{}); err != nil {
+		log.Fatal(err)
+	}
+	if _, err := parser.AddCommand("link", "Create a new link", "", &LinkCommand{}); err != nil {
 		log.Fatal(err)
 	}
 	if _, err := parser.AddCommand("version", "Print version", "", &VersionCommand{}); err != nil {

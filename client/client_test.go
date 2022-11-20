@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
@@ -53,6 +52,52 @@ func TestMemo_Submit_WithTags(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestLink_Submit_Success(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		requestBody, _ := ioutil.ReadAll(req.Body)
+		assert.Equal(t, `{"type":"url","content":"https://cubox.pro/","title":"Title","description":"Description"}`, string(requestBody[:]))
+		rw.Write([]byte(`{"code":200,"message":""}`))
+	}))
+
+	defer server.Close()
+
+	link := client.Link{
+		Type:        "url",
+		Content:     "https://cubox.pro/",
+		Title:       "Title",
+		Description: "Description",
+		API:         server.URL,
+	}
+
+	message, err := link.Submit(false)
+
+	assert.Equal(t, "", *message)
+	assert.Nil(t, err)
+}
+
+func TestLink_Submit_WithTags(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		requestBody, _ := ioutil.ReadAll(req.Body)
+		assert.Equal(t, `{"type":"url","content":"https://cubox.pro/","title":"Title","description":"Description","tags":["test"]}`, string(requestBody[:]))
+		rw.Write([]byte(`{"code":200,"message":""}`))
+	}))
+
+	defer server.Close()
+
+	link := client.Link{
+		Type:        "url",
+		Content:     "https://cubox.pro/",
+		Title:       "Title",
+		Description: "Description",
+		Tags:        []string{"test"},
+		API:         server.URL,
+	}
+
+	message, err := link.Submit(false)
+
+	assert.Equal(t, "", *message)
+	assert.Nil(t, err)
+}
 func TestMemo_Submit_LackOfArgs(t *testing.T) {
 	func() {
 		memo := client.Memo{
@@ -77,18 +122,6 @@ func TestMemo_Submit_LackOfArgs(t *testing.T) {
 
 		assert.EqualError(t, err, "lack of necessary arguments")
 	}()
-}
-
-func TestMemo_Submit_BadServer(t *testing.T) {
-	memo := client.Memo{
-		Type:    "memo",
-		API:     "http://server_not_exist",
-		Content: "Test",
-	}
-
-	_, err := memo.Submit(false)
-
-	assert.Equal(t, strings.HasPrefix(err.Error(), "failed to make a request to server"), true)
 }
 
 func TestMemo_Submit_BadResponse(t *testing.T) {

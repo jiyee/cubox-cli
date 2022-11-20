@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"io/ioutil"
@@ -14,8 +13,6 @@ import (
 	"testing"
 )
 
-var update = flag.Bool("update", false, "update test files with results")
-
 func TestCLI_NewMemo(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		requestBody, _ := ioutil.ReadAll(req.Body)
@@ -25,7 +22,7 @@ func TestCLI_NewMemo(t *testing.T) {
 
 	defer server.Close()
 
-	if err := exec.Command("go", "run", ".", "new", "--api", server.URL, "Test").Run(); err != nil {
+	if err := exec.Command("go", "run", ".", "memo", "--api", server.URL, "Test").Run(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -33,13 +30,13 @@ func TestCLI_NewMemo(t *testing.T) {
 func TestCLI_NewMemo_WithTags(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		requestBody, _ := ioutil.ReadAll(req.Body)
-		assert.Equal(t, `{"type":"memo","content":"Test\n\n#test"}`, string(requestBody[:]))
+		assert.Equal(t, `{"type":"memo","content":"Test","tags":["test"]}`, string(requestBody[:]))
 		rw.Write([]byte(`{"code":200,"message":""}`))
 	}))
 
 	defer server.Close()
 
-	if err := exec.Command("go", "run", ".", "new", "--api", server.URL, "--tags", "test", "Test").Run(); err != nil {
+	if err := exec.Command("go", "run", ".", "memo", "--api", server.URL, "--tag", "test", "Test").Run(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -54,7 +51,7 @@ func TestCLI_NewMemo_Pipe(t *testing.T) {
 	defer server.Close()
 
 	command1 := exec.Command("echo", "Test")
-	command2 := exec.Command("go", "run", ".", "new", "--api", server.URL)
+	command2 := exec.Command("go", "run", ".", "memo", "--api", server.URL)
 
 	r, w := io.Pipe()
 	command1.Stdout = w
