@@ -2,11 +2,11 @@
 
 ![Go](https://github.com/jiyee/cubox-cli/workflows/Go/badge.svg)
 
-[cubox](https://cubox.pro/) 命令行工具，支持添加 Link 和 Memo。
+[cubox](https://cubox.pro/) 命令行工具，支持添加 Memo 和 Link。
 
 ## 📥 安装
 
-macOS 系统请下载使用 `[cubox-cli-darwin-amd64.gz](https://github.com/jiyee/cubox-cli/blob/master/Downloads/cubox-cli-darwin-amd64.gz?raw=true)` 或者 `[cubox-cli-darwin-arm64.gz](https://github.com/jiyee/cubox-cli/blob/master/Downloads/cubox-cli-darwin-amd64.gz?raw=true)`
+macOS 系统请下载使用 [cubox-cli-darwin-amd64.gz](https://github.com/jiyee/cubox-cli/blob/master/Downloads/cubox-cli-darwin-amd64.gz?raw=true) 或者 [cubox-cli-darwin-arm64.gz](https://github.com/jiyee/cubox-cli/blob/master/Downloads/cubox-cli-darwin-arm64.gz?raw=true)
 
 ## 👉 使用
 
