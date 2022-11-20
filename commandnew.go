@@ -17,6 +17,8 @@ type NewCommand struct {
 	API string `long:"api" description:"cubox custom API" env:"CUBOX_API"`
 
 	Tags []string `short:"t" long:"tag" description:"additional tags"`
+
+	Folder string `short:"f" long:"folder" description:"specify a folder for the memo"`
 }
 
 func (x *NewCommand) Usage() string {
@@ -48,6 +50,7 @@ func (x *NewCommand) Run(args []string) (int, error) {
 		Type:    "memo",
 		Content: content,
 		Tags:    x.Tags,
+		Folder:  x.Folder,
 		API:     x.API,
 	}
 

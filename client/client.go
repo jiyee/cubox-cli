@@ -24,7 +24,8 @@ type Memo struct {
 type Payload struct {
 	Type    string   `json:"type"`
 	Content string   `json:"content"`
-	Tags    []string `json:"tags"`
+	Tags    []string `json:"tags,omitempty"`
+	Folder  string   `json:"folder,omitempty"`
 }
 
 func (m *Memo) Submit(verbose bool) (*string, error) {
@@ -40,6 +41,7 @@ func (m *Memo) Submit(verbose bool) (*string, error) {
 		m.Type,
 		content,
 		m.Tags,
+		m.Folder,
 	})
 	body := ioutil.NopCloser(strings.NewReader(string(payloadJSON)))
 	headers := http.Header{}

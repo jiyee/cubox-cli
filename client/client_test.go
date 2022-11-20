@@ -13,7 +13,7 @@ import (
 func TestMemo_Submit_Success(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		requestBody, _ := ioutil.ReadAll(req.Body)
-		assert.Equal(t, `{"type":"memo","content":"Test","tags":null}`, string(requestBody[:]))
+		assert.Equal(t, `{"type":"memo","content":"Test"}`, string(requestBody[:]))
 		rw.Write([]byte(`{"code":200,"message":""}`))
 	}))
 
